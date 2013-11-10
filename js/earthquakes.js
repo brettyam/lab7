@@ -58,22 +58,25 @@ function addQuakeMarkers(quakes, map) {
 		quake.mapMarker = new google.maps.Marker({
 			map: map,
 			position: new google.maps.LatLng(quake.location.latitude, quake.location.longitude)
-		});
-		google.maps.event.addListener(quake.mapMarker, 'click', function(){
-			// if an info window is already open, close it
-			if (gov.usgs.iw) {
-				gov.usgs.iw.close();
-			}
-			//create an info window with the quake info
-			gov.usgs.iw = new google.maps.InfoWindow({
-    			content: new Date(quake.datetime).toLocaleString() + ': magnitude ' + quake.magnitude 
-    			+ ' at depth of ' + quake.depth + ' meters'
-			});
-
-			gov.usgs.iw.open(map, this); //open the info window
-		}); //click handler for marker
+		}); //create marker
+		infoWindow = new google.maps.InfoWindow({
+    		content: new Date(quake.datetime).toLocaleString() + 
+                ': magnitude ' + quake.magnitude + ' at depth of ' + quake.depth + ' meters'
+		}); // create info window
+		registerInfoWindow(map, quake.mapMarker, infoWindow);
 	} //loop over quakes array
 } //addQuakeMarkers()
+
+function registerInfoWindow(map, marker, infoWindow) {
+	google.maps.event.addListener(marker, 'click', function(){
+		//if an info window is already open, close it
+		if (gov.usgs.iw) {
+			gov.usgs.iw.close();
+		}
+		gov.usgs.iw = infoWindow;
+		infoWindow.open(map, marker);
+	});
+} //registerInfoWindow()
 
 //AJAX Error event handler
 //just alerts the user of the error
